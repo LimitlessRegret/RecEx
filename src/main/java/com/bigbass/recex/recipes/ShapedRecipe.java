@@ -1,16 +1,18 @@
 package com.bigbass.recex.recipes;
 
+import com.bigbass.recex.recipes.ingredients.ItemAmount;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ShapedRecipe implements Recipe {
 	
 	/** input items */
-	public List<Item> iI;
+	public List<ItemAmount> iI;
 	/** output item */
-	public Item o;
+	public ItemAmount o;
 	
 	public ShapedRecipe(){
-		iI = new ArrayList<Item>();
+		iI = new ArrayList<ItemAmount>();
 	}
 }
