@@ -1,18 +1,15 @@
 package com.bigbass.recex.recipes.ingredients;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ItemOreDict implements IItem {
+	/** dictionary ids */
+	public Set<Integer> ods;
+	/** amount */
+	public int a;
 	
-	/** dictionary name(s) */
-	public List<String> dns;
-	
-	/** items which match the dictionary name */
-	public List<Item> ims;
-    
     public ItemOreDict(){
-    	dns = new ArrayList<String>();
-    	ims = new ArrayList<Item>();
+    	ods = new HashSet<>();
     }
 }

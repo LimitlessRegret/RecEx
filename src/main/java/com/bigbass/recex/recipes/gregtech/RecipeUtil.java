@@ -3,59 +3,39 @@ package com.bigbass.recex.recipes.gregtech;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bigbass.recex.recipes.ItemProgrammedCircuit;
-import com.bigbass.recex.recipes.ingredients.Fluid;
-import com.bigbass.recex.recipes.ingredients.Item;
+import com.bigbass.recex.recipes.ingredients.FluidOrItem;
+import com.bigbass.recex.recipes.ingredients.ItemAmount;
 import com.bigbass.recex.recipes.ingredients.ItemOreDict;
 
+import com.bigbass.recex.recipes.ingredients.ItemUtil;
 import gregtech.api.util.GT_LanguageManager;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class RecipeUtil {
 	
-	public static Item formatRegularItemStack(ItemStack stack){
+	public static ItemAmount formatRegularItemStack(ItemStack stack){
 		if(stack == null){
 			return null;
 		}
 		
-		Item item = new Item();
-		
+		ItemAmount item = new ItemAmount();
+		item.id = ItemUtil.getItemId(stack);
 		item.a = stack.stackSize;
-		try {
-			item.uN = stack.getUnlocalizedName();
-		} catch(Exception e){}
-		try {
-			item.lN = stack.getDisplayName();
-		} catch(Exception e){}
-		
 		return item;
 	}
 	
-	public static Item formatGregtechItemStack(ItemStack stack){
+	public static ItemAmount formatGregtechItemStack(ItemStack stack){
 		if(stack == null){
 			return null;
 		}
 		
-		Item item = new Item();
-		
+		ItemAmount item = new ItemAmount();
 		item.a = stack.stackSize;
-		try {
-			item.uN = stack.getUnlocalizedName();
-		} catch(Exception e){}
-		try {
-			item.lN = stack.getDisplayName();
-		} catch(Exception e1){
-			try {
-				item.lN = GT_LanguageManager.getTranslation(stack.getUnlocalizedName());
-			} catch(Exception e2){}
-		}
-		
-		if(item.uN != null && !item.uN.isEmpty() && item.uN.equalsIgnoreCase("gt.integrated_circuit")){ // Programmed Circuit
-			item = new ItemProgrammedCircuit(item, stack.getItemDamage());
-		}
-		
+		item.id = ItemUtil.getItemId(stack);
+
 		return item;
 	}
 	
@@ -70,15 +50,10 @@ public class RecipeUtil {
 			return null;
 		}
 		
-		List<Item> items = searchOreDictionary(name);
-		if(items == null || items.isEmpty()){
-			return null;
-		}
-		
 		ItemOreDict item = new ItemOreDict();
-		item.dns.add(name);
-		item.ims = items;
-		
+		item.ods.add(OreDictionary.getOreID(name));
+		item.a = 1;
+
 		return item;
 	}
 	
@@ -95,56 +70,23 @@ public class RecipeUtil {
 		
 		ItemOreDict retItem = new ItemOreDict();
 		for(String name : names){
-			ItemOreDict tmpItem = parseOreDictionary(name);
-			if(tmpItem != null){
-				retItem.dns.addAll(tmpItem.dns);
-				retItem.ims.addAll(tmpItem.ims);
-			}
+			retItem.ods.add(OreDictionary.getOreID(name));
 		}
+		retItem.a = 1;
 		
 		return retItem;
 	}
 	
-	public static Fluid formatGregtechFluidStack(FluidStack stack){
+	public static ItemAmount formatGregtechFluidStack(FluidStack stack){
 		if(stack == null){
 			return null;
 		}
 		
-		Fluid fluid = new Fluid();
+		ItemAmount fluid = new ItemAmount();
 		
 		fluid.a = stack.amount;
-		try {
-			fluid.uN = stack.getUnlocalizedName();
-		} catch(Exception e){}
-		try {
-			fluid.lN = GT_LanguageManager.getTranslation(stack.getUnlocalizedName());
-		} catch(Exception e1){
-			try {
-				fluid.lN = stack.getFluid().getName();
-			} catch(Exception e2){
-				try {
-					fluid.lN = stack.getLocalizedName();
-				} catch(Exception e3){}
-			}
-		}
-		
+		fluid.id = ItemUtil.getFluidId(stack.getFluid());
+
 		return fluid;
-	}
-	
-	/**
-	 * Retrieves all items which match a given OreDictionary name.
-	 * 
-	 * @param name OreDictionary name
-	 * @return Collection of items retrieved from the OreDictionary
-	 */
-	public static List<Item> searchOreDictionary(String name){
-		List<ItemStack> retrievedItemStacks = OreDictionary.getOres(name);
-		List<Item> retrievedItems = new ArrayList<Item>();
-		
-		for(ItemStack stack : retrievedItemStacks){
-			Item item = RecipeUtil.formatRegularItemStack(stack);
-			retrievedItems.add(item);
-		}
-		return retrievedItems;
 	}
 }

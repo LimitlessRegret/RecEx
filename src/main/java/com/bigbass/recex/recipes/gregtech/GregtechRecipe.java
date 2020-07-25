@@ -3,8 +3,7 @@ package com.bigbass.recex.recipes.gregtech;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.bigbass.recex.recipes.ingredients.Fluid;
-import com.bigbass.recex.recipes.ingredients.Item;
+import com.bigbass.recex.recipes.ingredients.ItemAmount;
 
 public class GregtechRecipe {
 	
@@ -15,18 +14,18 @@ public class GregtechRecipe {
 	/** EU/t */
 	public int eut;
 	/** itemInputs */
-	public List<Item> iI;
+	public List<ItemAmount> iI;
 	/** itemOutputs */
-	public List<Item> iO;
+	public List<ItemAmount> iO;
 	/** fluidInputs */
-	public List<Fluid> fI;
+	public List<ItemAmount> fI;
 	/** fluidOutputs */
-	public List<Fluid> fO;
+	public List<ItemAmount> fO;
 	
 	public GregtechRecipe(){
-		iI = new ArrayList<Item>();
-		iO = new ArrayList<Item>();
-		fI = new ArrayList<Fluid>();
-		fO = new ArrayList<Fluid>();
+		iI = new ArrayList<>();
+		iO = new ArrayList<>();
+		fI = new ArrayList<>();
+		fO = new ArrayList<>();
 	}
 }
