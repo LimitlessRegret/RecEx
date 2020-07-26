@@ -78,8 +78,6 @@ public class RecipeExporter {
 		sources.add(getOreDictShapelessRecipes());
 		sources.add(getFurnaceRecipes());
 
-		IconRenderer.getInstance().dispose();
-
 		List<OreDictEntry> oreDictEntries = new ArrayList<>();
 		for (String name : OreDictionary.getOreNames()) {
 			OreDictEntry entry = new OreDictEntry();
@@ -95,6 +93,7 @@ public class RecipeExporter {
 		root.put("items", ItemUtil.getFluidOrItemList());
 		root.put("oreDict", oreDictEntries);
 		ItemUtil.reset();
+		IconRenderer.getInstance().dispose();
 
 		Gson gson = new GsonBuilder()
 				.registerTypeAdapter(Mod.class, new ModSerializer())

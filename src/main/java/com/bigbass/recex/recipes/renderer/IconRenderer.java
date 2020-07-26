@@ -29,7 +29,6 @@ import org.lwjgl.opengl.GL30;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Base64;
 
 import static net.minecraftforge.client.IItemRenderer.ItemRenderType.INVENTORY;
 import static net.minecraftforge.client.IItemRenderer.ItemRendererHelper.INVENTORY_BLOCK;
@@ -75,9 +74,9 @@ public class IconRenderer {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
     }
 
-    public void printItemStack(ItemStack itemStack, String unlocalizedName) {
+    public void printItemStack(ItemStack itemStack, int id) {
         checkFrameBuffer();
-        File output = getPngFile(unlocalizedName);
+        File output = getPngFile("item_" + id);
         if (output == null) return;
         before();
 
@@ -98,9 +97,9 @@ public class IconRenderer {
         after();
     }
 
-    public void printFluidStack(FluidStack fluidStack, String unlocalizedName) {
+    public void printFluidStack(FluidStack fluidStack, int id) {
         checkFrameBuffer();
-        File output = getPngFile(unlocalizedName);
+        File output = getPngFile("fluid_" + id);
         if (output == null) return;
         before();
 
@@ -117,12 +116,11 @@ public class IconRenderer {
         }
     }
 
-    private File getPngFile(String unlocalizedName) {
-        if (unlocalizedName == null || unlocalizedName.isEmpty()) {
+    private File getPngFile(String idName) {
+        if (idName == null || idName.isEmpty()) {
             return null;
         }
-        String encodedUnlocalizedName = Base64.getEncoder().encodeToString(unlocalizedName.getBytes());
-        File output = new File(RecipeExporterMod.clientConfigDir.getParent() + "/RecEx-Icons/" + encodedUnlocalizedName + ".png");
+        File output = new File(RecipeExporterMod.clientConfigDir.getParent() + "/RecEx-Icons/" + idName + ".png");
         try {
             if(!output.getParentFile().exists()){
                 boolean result = output.getParentFile().mkdirs();
@@ -215,7 +213,11 @@ public class IconRenderer {
         float x = 0f, y = 0f;
 
         if (item.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
-            item.setItemDamage(0);
+            try {
+                item.setItemDamage(0);
+            } catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(item, INVENTORY);

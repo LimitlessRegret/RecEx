@@ -7,7 +7,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.oredict.OreDictionary;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -71,7 +70,7 @@ public class ItemUtil {
         } catch (Exception e) {
         }
         foi.f = false;
-        IconRenderer.getInstance().printItemStack(stack, foi.uN);
+        IconRenderer.getInstance().printItemStack(stack, foi.id);
 
         fluidOrItemList.add(foi);
     }
@@ -95,7 +94,7 @@ public class ItemUtil {
             foi.uN = stack.getUnlocalizedName();
         } catch (Exception e) {
         }
-        IconRenderer.getInstance().printFluidStack(stack, foi.uN);
+        IconRenderer.getInstance().printFluidStack(stack, foi.id);
         foi.f = true;
 
         fluidOrItemList.add(foi);
