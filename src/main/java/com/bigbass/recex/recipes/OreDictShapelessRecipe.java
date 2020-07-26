@@ -7,11 +7,11 @@ import java.util.List;
 
 public class OreDictShapelessRecipe implements Recipe {
     /** input items */
-    public List<Object> iI;
+    public List<ItemBase> iI;
     /** output item */
     public ItemAmount o;
 
     public OreDictShapelessRecipe(){
-        iI = new ArrayList<Object>();
+        iI = new ArrayList<>();
     }
 }

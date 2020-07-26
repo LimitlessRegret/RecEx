@@ -174,9 +174,25 @@ public class RecipeExporter {
 					} else if (stack instanceof Block) {
 						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block) stack, 1, Short.MAX_VALUE)));
 					} else if (stack instanceof ArrayList && !((ArrayList) stack).isEmpty()) {
-						@SuppressWarnings("unchecked")
-						ItemStack item = ((ArrayList<ItemStack>) stack).get(0);
-						rec.iI.add(getOreDictNames(item));
+						ArrayList<?> list = (ArrayList<?>) stack;
+						ItemOreDict item = new ItemOreDict();
+						for (Object listObj : list) {
+							if (listObj instanceof ItemStack) {
+								ItemStack stack2 = (ItemStack) listObj;
+								if (item.a != 0 && item.a != stack2.stackSize) {
+									RecipeExporterMod.log.warn("Stack size in ore dict'd slot not consistent!");
+								}
+								item.a = stack2.stackSize;
+
+								int[] ids = OreDictionary.getOreIDs(stack2);
+								for (int id : ids) {
+									item.ods.add(id);
+								}
+							}
+						}
+						if (!item.ods.isEmpty()) {
+							rec.iI.add(item);
+						}
 					}
 				}
 
