@@ -3,7 +3,7 @@ package com.bigbass.recex.recipes;
 import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
 import com.bigbass.recex.recipes.exporters.GTPPRecipeExporter;
-import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
+import com.bigbass.recex.recipes.exporters.GregTechRecipeExporter;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
 import com.bigbass.recex.recipes.ingredients.ItemAmount;
 import com.bigbass.recex.recipes.ingredients.ItemOreDict;
@@ -15,16 +15,12 @@ import com.bigbass.recex.recipes.serializers.MachineSerializer;
 import com.bigbass.recex.recipes.serializers.ModSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import gregtech.api.util.GT_LanguageManager;
-import gregtech.api.util.GT_Recipe;
-import gregtech.api.util.GT_Recipe.GT_Recipe_Map;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -35,7 +31,10 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 public class RecipeExporter {
 
@@ -70,7 +69,7 @@ public class RecipeExporter {
 		IconRenderer.getInstance().init();
 
 		List<Object> sources = new ArrayList<Object>();
-		sources.add(getGregtechRecipes());
+		sources.add(new GregTechRecipeExporter().getRecipes());
 		sources.add(new GTPPRecipeExporter().getRecipes());
 		sources.add(new ForestryRecipeExporter().getRecipes());
 		sources.add(getShapedRecipes());
@@ -109,81 +108,6 @@ public class RecipeExporter {
 			e.printStackTrace();
 			RecipeExporterMod.log.error("Recipes failed to export!");
 		}
-	}
-
-	/**
-	 * <p>Unlike vanilla recipes, the current schema here groups recipes from each machine together.
-	 * This is a minor file size improvement. Rather than specifying the machine's name in every recipe,
-	 * the machine name is only listed once for the entire file.</p>
-	 *
-	 * <p>This format does not impede the process of loading the recipes into NEP.</p>
-	 */
-	private Object getGregtechRecipes() {
-		List<Machine> machines = new ArrayList<Machine>();
-		for (GT_Recipe_Map map : GT_Recipe_Map.sMappings) {
-			Machine mach = new Machine(GT_LanguageManager.getTranslation(map.mUnlocalizedName));
-
-			// machine name retrieval
-			if (mach.name == null || mach.name.isEmpty()) {
-				mach.name = map.mUnlocalizedName;
-			}
-
-			for (GT_Recipe rec : map.mRecipeList) {
-				GregtechRecipe gtr = new GregtechRecipe();
-				gtr.en = rec.mEnabled;
-				gtr.dur = rec.mDuration;
-				gtr.eut = rec.mEUt;
-
-				// item inputs
-				for (ItemStack stack : rec.mInputs) {
-					ItemAmount item = RecipeUtil.formatRegularItemStack(stack);
-
-					if (item == null) {
-						continue;
-					}
-
-					gtr.iI.add(item);
-				}
-
-				// item outputs
-				for (ItemStack stack : rec.mOutputs) {
-					ItemAmount item = RecipeUtil.formatRegularItemStack(stack);
-
-					if (item == null) {
-						continue;
-					}
-
-					gtr.iO.add(item);
-				}
-
-				// fluid inputs
-				for (FluidStack stack : rec.mFluidInputs) {
-					ItemAmount fluid = RecipeUtil.formatRegularFluidStack(stack);
-
-					if (fluid == null) {
-						continue;
-					}
-
-					gtr.fI.add(fluid);
-				}
-
-				// fluid outputs
-				for (FluidStack stack : rec.mFluidOutputs) {
-					ItemAmount fluid = RecipeUtil.formatRegularFluidStack(stack);
-
-					if (fluid == null) {
-						continue;
-					}
-
-					gtr.fO.add(fluid);
-				}
-
-				mach.recipes.add(gtr);
-			}
-			machines.add(mach);
-		}
-
-		return new Mod("gregtech", machines);
 	}
 
 	private Machine getOreDictShapedRecipes() {
