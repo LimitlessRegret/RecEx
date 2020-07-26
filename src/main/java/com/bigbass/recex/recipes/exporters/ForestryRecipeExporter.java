@@ -3,6 +3,7 @@ package com.bigbass.recex.recipes.exporters;
 import com.bigbass.recex.recipes.*;
 import com.bigbass.recex.recipes.forestry.RfRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
+import com.bigbass.recex.recipes.ingredients.ItemAmount;
 import forestry.api.fuels.FermenterFuel;
 import forestry.api.fuels.FuelManager;
 import forestry.api.recipes.*;
@@ -89,9 +90,9 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
             for (Map.Entry<ItemStack, Float> output : recipe.getAllProducts().entrySet()) {
                 if (output != null && output.getKey() != null) {
-                    Item item = RecipeUtil.formatRegularItemStack(output.getKey());
-                    ItemRandom itemRandom = new ItemRandom(item, output.getValue());
-                    rfRecipe.iO.add(itemRandom);
+                    ItemAmount item = RecipeUtil.formatRegularItemStack(output.getKey());
+                    item.c = (int) (output.getValue() * 10000);
+                    rfRecipe.iO.add(item);
                 }
             }
 
@@ -107,7 +108,7 @@ public class ForestryRecipeExporter implements RecipeExporter {
         for (Map.Entry<ItemStack, FermenterFuel> entry : FuelManager.fermenterFuel.entrySet()) {
             int fermentPerCycle = entry.getValue().fermentPerCycle;
 
-            Item fuelItem = RecipeUtil.formatGregtechItemStack(entry.getKey());
+            ItemAmount fuelItem = RecipeUtil.formatRegularItemStack(entry.getKey());
             ItemMetaData fuel = null;
             if (fuelItem != null) {
                 fuel = new ItemMetaData(fuelItem, "catalyst");
@@ -138,7 +139,7 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
                 if (recipe.getOutput() != null) {
                     int amount = Math.round(recipe.getFermentationValue() * recipe.getModifier());
-                    Fluid output = RecipeUtil.formatRegularFluidStack(new FluidStack(recipe.getOutput(), amount));
+                    ItemAmount output = RecipeUtil.formatRegularFluidStack(new FluidStack(recipe.getOutput(), amount));
                     rfRecipe.fO.add(output);
                 }
 
@@ -192,8 +193,9 @@ public class ForestryRecipeExporter implements RecipeExporter {
             }
 
             if (recipe.getRemnants() != null) {
-                Item item = RecipeUtil.formatRegularItemStack(recipe.getRemnants());
-                rfRecipe.iO.add(new ItemRandom(item, recipe.getRemnantsChance()));
+                ItemAmount item = RecipeUtil.formatRegularItemStack(recipe.getRemnants());
+                item.c = (int) (recipe.getRemnantsChance() * 10000);
+                rfRecipe.iO.add(item);
             }
 
             if (recipe.getFluidOutput() != null) {

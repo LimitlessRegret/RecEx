@@ -1,10 +1,12 @@
 package com.bigbass.recex.recipes;
 
-public class ItemMetaData extends Item {
+import com.bigbass.recex.recipes.ingredients.ItemAmount;
+
+public class ItemMetaData extends ItemAmount {
     public String meta;
 
-    public ItemMetaData(Item item, String metaData) {
-        super(item.a, item.uN, item.lN);
+    public ItemMetaData(ItemAmount item, String metaData) {
+        super(item.a, item.a, item.c);
         this.meta = metaData;
     }
 }
