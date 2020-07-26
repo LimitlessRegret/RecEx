@@ -92,7 +92,6 @@ public class RecipeExporter {
 		root.put("sources", sources);
 		root.put("items", ItemUtil.getFluidOrItemList());
 		root.put("oreDict", oreDictEntries);
-		ItemUtil.reset();
 		IconRenderer.getInstance().dispose();
 
 		Gson gson = new GsonBuilder()
@@ -107,6 +106,7 @@ public class RecipeExporter {
 			e.printStackTrace();
 			RecipeExporterMod.log.error("Recipes failed to export!");
 		}
+		ItemUtil.reset();
 	}
 
 	private Machine getOreDictShapedRecipes() {
