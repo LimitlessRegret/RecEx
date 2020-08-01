@@ -2,6 +2,8 @@ package com.bigbass.recex.recipes.ingredients;
 
 import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.recipes.renderer.IconRenderer;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
 import gregtech.api.util.GT_LanguageManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -73,6 +75,14 @@ public class ItemUtil {
         IconRenderer.getInstance().printItemStack(stack, foi.id);
 
         fluidOrItemList.add(foi);
+
+        String modPrefix = stack.getItem().delegate.name().split(":")[0];
+        ModContainer modContainer = Loader.instance().getIndexedModList().get(modPrefix);
+        if (modContainer != null) {
+            foi.m = modContainer.getName();
+        } else {
+            foi.m = "unknown";
+        }
     }
 
     private static void addFluid(FluidStack stack) {

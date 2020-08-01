@@ -16,15 +16,19 @@ public class FluidOrItem {
 	/** localizedName */
 	public String lN;
 
+	/** mod */
+    public String m;
+
 	public FluidOrItem(){
 
 	}
 
-	public FluidOrItem(int id, int damage, boolean isFluid, String unlocalizedName, String localizedName) {
+	public FluidOrItem(int id, int damage, boolean isFluid, String unlocalizedName, String localizedName, String mod) {
 		this.id = id;
 		this.d = damage;
 		this.f = isFluid;
 		this.uN = unlocalizedName;
 		this.lN = localizedName;
+		this.m = mod;
 	}
 }
