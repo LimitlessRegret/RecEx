@@ -121,6 +121,7 @@ dependencies {
 	compile "codechicken:CodeChickenCore:1.7.10-1.0.7.47:dev"
 	compile "codechicken:NotEnoughItems:1.7.10-1.0.5.120:dev"
 	compile "net.sengir.forestry:forestry_1.7.10:4.2.9.57:dev"
+	compile "net.industrial-craft:industrialcraft-2:2.2.828-experimental:dev"
 
 	compile "com.google.code.gson:gson:2.7"
 	shadow "ar.com.hjg:pngj:2.1.0"

@@ -1,12 +1,11 @@
 package com.bigbass.recex.recipes;
 
 import com.bigbass.recex.RecipeExporterMod;
+import com.bigbass.recex.recipes.exporters.CraftingTableRecipeExporter;
 import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
 import com.bigbass.recex.recipes.exporters.GTPPRecipeExporter;
 import com.bigbass.recex.recipes.exporters.GregTechRecipeExporter;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
-import com.bigbass.recex.recipes.ingredients.ItemOreDict;
 import com.bigbass.recex.recipes.ingredients.ItemUtil;
 import com.bigbass.recex.recipes.ingredients.OreDictEntry;
 import com.bigbass.recex.recipes.renderer.IconRenderer;
@@ -15,15 +14,9 @@ import com.bigbass.recex.recipes.serializers.MachineSerializer;
 import com.bigbass.recex.recipes.serializers.ModSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.oredict.OreDictionary;
-import net.minecraftforge.oredict.ShapedOreRecipe;
-import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -72,10 +65,7 @@ public class RecipeExporter {
 		sources.add(new GregTechRecipeExporter().getRecipes());
 		sources.add(new GTPPRecipeExporter().getRecipes());
 		sources.add(new ForestryRecipeExporter().getRecipes());
-		sources.add(getShapedRecipes());
-		sources.add(getShapelessRecipes());
-		sources.add(getOreDictShapedRecipes());
-		sources.add(getOreDictShapelessRecipes());
+		sources.addAll(new CraftingTableRecipeExporter().getRecipes().machines);
 		sources.add(getFurnaceRecipes());
 
 		List<OreDictEntry> oreDictEntries = new ArrayList<>();
@@ -98,7 +88,6 @@ public class RecipeExporter {
 				.registerTypeAdapter(Mod.class, new ModSerializer())
 				.registerTypeAdapter(Machine.class, new MachineSerializer())
 				.registerTypeAdapter(ItemList.class, new ItemListSerializer())
-				.serializeNulls()
 				.create();
 		try {
 			saveData(gson.toJson(root));
@@ -107,161 +96,6 @@ public class RecipeExporter {
 			RecipeExporterMod.log.error("Recipes failed to export!");
 		}
 		ItemUtil.reset();
-	}
-
-	private Machine getOreDictShapedRecipes() {
-		List<Recipe> retRecipes = new ArrayList<>();
-		List<?> recipes = CraftingManager.getInstance().getRecipeList();
-		for (Object obj : recipes) {
-			if (obj instanceof ShapedOreRecipe) {
-				ShapedOreRecipe original = (ShapedOreRecipe) obj;
-				OreDictShapedRecipe rec = new OreDictShapedRecipe();
-
-				for (Object stack : original.getInput()) {
-					if (stack instanceof ItemStack) {
-						ItemAmount item = RecipeUtil.formatRegularItemStack((ItemStack) stack);
-						rec.iI.add(item);
-					} else if (stack instanceof net.minecraft.item.Item) {
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item) stack)));
-					} else if (stack instanceof Block) {
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block) stack, 1, Short.MAX_VALUE)));
-					} else if (stack instanceof ArrayList && !((ArrayList) stack).isEmpty()) {
-						ArrayList<?> list = (ArrayList<?>) stack;
-						ItemOreDict item = new ItemOreDict();
-						for (Object listObj : list) {
-							if (listObj instanceof ItemStack) {
-								ItemStack stack2 = (ItemStack) listObj;
-								if (item.a != 0 && item.a != stack2.stackSize) {
-									RecipeExporterMod.log.warn("Stack size in ore dict'd slot not consistent!");
-								}
-								item.a = stack2.stackSize;
-
-								int[] ids = OreDictionary.getOreIDs(stack2);
-								for (int id : ids) {
-									item.ods.add(id);
-								}
-							}
-						}
-						if (!item.ods.isEmpty()) {
-							rec.iI.add(item);
-						}
-					}
-				}
-
-				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-
-				retRecipes.add(rec);
-			}
-		}
-
-		return new Machine("shapedOre", retRecipes);
-	}
-
-	private Machine getOreDictShapelessRecipes() {
-		List<Recipe> retRecipes = new ArrayList<>();
-		List<?> recipes = CraftingManager.getInstance().getRecipeList();
-		for (Object obj : recipes) {
-			if (obj instanceof ShapelessOreRecipe) {
-				ShapelessOreRecipe original = (ShapelessOreRecipe) obj;
-				OreDictShapelessRecipe rec = new OreDictShapelessRecipe();
-
-				for (Object stack : original.getInput()) {
-					if (stack instanceof ItemStack) {
-						ItemAmount item = RecipeUtil.formatRegularItemStack((ItemStack) stack);
-						rec.iI.add(item);
-					} else if (stack instanceof net.minecraft.item.Item) {
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item) stack)));
-					} else if (stack instanceof Block) {
-						rec.iI.add(RecipeUtil.formatRegularItemStack(new ItemStack((Block) stack, 1, Short.MAX_VALUE)));
-					} else if (stack instanceof ArrayList && !((ArrayList) stack).isEmpty()) {
-						ArrayList<?> list = (ArrayList<?>) stack;
-						ItemOreDict item = new ItemOreDict();
-						for (Object listObj : list) {
-							if (listObj instanceof ItemStack) {
-								ItemStack stack2 = (ItemStack) listObj;
-								if (item.a != 0 && item.a != stack2.stackSize) {
-									RecipeExporterMod.log.warn("Stack size in ore dict'd slot not consistent!");
-								}
-								item.a = stack2.stackSize;
-
-								int[] ids = OreDictionary.getOreIDs(stack2);
-								for (int id : ids) {
-									item.ods.add(id);
-								}
-							}
-						}
-						if (!item.ods.isEmpty()) {
-							rec.iI.add(item);
-						}
-					}
-				}
-
-				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-
-				retRecipes.add(rec);
-			}
-		}
-
-		return new Machine("shapelessOre", retRecipes);
-	}
-
-	private List<String> getOreDictNames(ItemStack itemStack) {
-		int[] ids = OreDictionary.getOreIDs(itemStack);
-		ArrayList<String> names = new ArrayList<>();
-		for (int id : ids) {
-			names.add(OreDictionary.getOreName(id));
-		}
-		return names;
-	}
-
-	private Machine getShapedRecipes() {
-		List<Recipe> retRecipes = new ArrayList<>();
-		List<?> recipes = CraftingManager.getInstance().getRecipeList();
-		for (Object obj : recipes) {
-			if (obj instanceof ShapedRecipes) {
-				ShapedRecipes original = (ShapedRecipes) obj;
-				ShapedRecipe rec = new ShapedRecipe();
-
-				for (ItemStack stack : original.recipeItems) {
-					ItemAmount item = RecipeUtil.formatRegularItemStack(stack);
-					rec.iI.add(item);
-				}
-
-				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-
-				retRecipes.add(rec);
-			}
-		}
-
-		return new Machine("shaped", retRecipes);
-	}
-
-	private Machine getShapelessRecipes() {
-		List<Recipe> retRecipes = new ArrayList<>();
-		List<?> recipes = CraftingManager.getInstance().getRecipeList();
-		for (Object obj : recipes) {
-			if (obj instanceof ShapelessRecipes) {
-				ShapelessRecipes original = (ShapelessRecipes) obj;
-				ShapelessRecipe rec = new ShapelessRecipe();
-
-				for (Object stack : original.recipeItems) {
-					ItemAmount item = null;
-					if (stack instanceof ItemStack) {
-						item = RecipeUtil.formatRegularItemStack((ItemStack) stack);
-					} else if (stack instanceof net.minecraft.item.Item) {
-						item = RecipeUtil.formatRegularItemStack(new ItemStack((net.minecraft.item.Item) stack));
-					}
-
-					rec.iI.add(item);
-				}
-
-				rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-
-				retRecipes.add(rec);
-			}
-		}
-
-		return new Machine("shapeless", retRecipes);
 	}
 
 	private Machine getFurnaceRecipes() {

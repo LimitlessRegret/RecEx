@@ -8,7 +8,7 @@ import java.util.List;
 public class ShapelessRecipe implements Recipe {
 	
 	/** input items */
-	public List<ItemAmount> iI;
+	public List<ItemBase> iI;
 	/** output item */
 	public ItemAmount o;
 	

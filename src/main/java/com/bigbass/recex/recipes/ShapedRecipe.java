@@ -8,11 +8,11 @@ import java.util.List;
 public class ShapedRecipe implements Recipe {
 	
 	/** input items */
-	public List<ItemAmount> iI;
+	public List<ItemBase> iI;
 	/** output item */
 	public ItemAmount o;
 	
 	public ShapedRecipe(){
-		iI = new ArrayList<ItemAmount>();
+		iI = new ArrayList<>();
 	}
 }
