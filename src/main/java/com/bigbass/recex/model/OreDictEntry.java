@@ -1,4 +1,4 @@
-package com.bigbass.recex.recipes.ingredients;
+package com.bigbass.recex.model;
 
 import java.util.ArrayList;
 import java.util.List;

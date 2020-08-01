@@ -1,17 +1,15 @@
 package com.bigbass.recex.recipes;
 
 import com.bigbass.recex.RecipeExporterMod;
+import com.bigbass.recex.model.Machine;
+import com.bigbass.recex.model.OreDictEntry;
+import com.bigbass.recex.model.RecipeBase;
 import com.bigbass.recex.recipes.exporters.CraftingTableRecipeExporter;
 import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
 import com.bigbass.recex.recipes.exporters.GTPPRecipeExporter;
 import com.bigbass.recex.recipes.exporters.GregTechRecipeExporter;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
-import com.bigbass.recex.recipes.ingredients.ItemUtil;
-import com.bigbass.recex.recipes.ingredients.OreDictEntry;
 import com.bigbass.recex.recipes.renderer.IconRenderer;
-import com.bigbass.recex.recipes.serializers.ItemListSerializer;
-import com.bigbass.recex.recipes.serializers.MachineSerializer;
-import com.bigbass.recex.recipes.serializers.ModSerializer;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.minecraft.item.ItemStack;
@@ -85,10 +83,7 @@ public class RecipeExporter {
 		IconRenderer.getInstance().dispose();
 
 		Gson gson = new GsonBuilder()
-				.registerTypeAdapter(Mod.class, new ModSerializer())
-				.registerTypeAdapter(Machine.class, new MachineSerializer())
-				.registerTypeAdapter(ItemList.class, new ItemListSerializer())
-				.create();
+                .create();
 		try {
 			saveData(gson.toJson(root));
 		} catch (Exception e) {
@@ -99,12 +94,12 @@ public class RecipeExporter {
 	}
 
 	private Machine getFurnaceRecipes() {
-		List<Recipe> recipes = new ArrayList<>();
+		List<RecipeBase> recipes = new ArrayList<>();
 		Map<ItemStack, ItemStack> smeltingList = FurnaceRecipes.smelting().getSmeltingList();
 		for (Map.Entry<ItemStack, ItemStack> entry : smeltingList.entrySet()) {
-			FurnaceRecipe recipe = new FurnaceRecipe();
-			recipe.i = RecipeUtil.formatRegularItemStack(entry.getKey());
-			recipe.o = RecipeUtil.formatRegularItemStack(entry.getValue());
+            RecipeBase recipe = new RecipeBase();
+			recipe.input.add(RecipeUtil.formatRegularItemStack(entry.getKey()));
+			recipe.output.add(RecipeUtil.formatRegularItemStack(entry.getValue()));
 			recipes.add(recipe);
 		}
 		return new Machine("furnace", recipes);

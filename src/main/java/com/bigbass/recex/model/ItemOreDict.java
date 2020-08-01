@@ -1,6 +1,4 @@
-package com.bigbass.recex.recipes.ingredients;
-
-import com.bigbass.recex.recipes.ItemBase;
+package com.bigbass.recex.model;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,10 +1,13 @@
 package com.bigbass.recex.recipes.exporters;
 
 import com.bigbass.recex.RecipeExporterMod;
-import com.bigbass.recex.recipes.*;
+import com.bigbass.recex.model.ItemBase;
+import com.bigbass.recex.model.Machine;
+import com.bigbass.recex.recipes.Mod;
+import com.bigbass.recex.model.RecipeBase;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
-import com.bigbass.recex.recipes.ingredients.ItemOreDict;
+import com.bigbass.recex.model.ItemAmount;
+import com.bigbass.recex.model.ItemOreDict;
 import ic2.core.AdvRecipe;
 import ic2.core.AdvShapelessRecipe;
 import net.minecraft.block.Block;
@@ -25,54 +28,42 @@ public class CraftingTableRecipeExporter implements RecipeExporter {
         List<?> recipes = CraftingManager.getInstance().getRecipeList();
         HashSet<Class<?>> unhandledClasses = new HashSet<>();
         for (Object obj : recipes) {
-            Recipe recipe;
+            RecipeBase rec = new RecipeBase();
             if (obj instanceof ShapelessOreRecipe) {
                 ShapelessOreRecipe original = (ShapelessOreRecipe) obj;
-                OreDictShapelessRecipe rec = new OreDictShapelessRecipe();
 
-                rec.iI.addAll(extractItemList(original.getInput()));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(original.getInput()));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else if (obj instanceof ShapedOreRecipe) {
                 ShapedOreRecipe original = (ShapedOreRecipe) obj;
-                OreDictShapedRecipe rec = new OreDictShapedRecipe();
 
-                rec.iI.addAll(extractItemList(original.getInput()));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(original.getInput()));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else if (obj instanceof ShapedRecipes) {
                 ShapedRecipes original = (ShapedRecipes) obj;
-                ShapedRecipe rec = new ShapedRecipe();
 
-                rec.iI.addAll(extractItemList(Arrays.asList(original.recipeItems)));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(Arrays.asList(original.recipeItems)));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else if (obj instanceof ShapelessRecipes) {
                 ShapelessRecipes original = (ShapelessRecipes) obj;
-                ShapelessRecipe rec = new ShapelessRecipe();
 
-                rec.iI.addAll(extractItemList(original.recipeItems));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(original.recipeItems));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else if (obj instanceof AdvRecipe) {
                 AdvRecipe original = (AdvRecipe) obj;
-                OreDictShapedRecipe rec = new OreDictShapedRecipe();
 
-                rec.iI.addAll(extractItemList(original.input));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(original.input));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else if (obj instanceof AdvShapelessRecipe) {
                 AdvShapelessRecipe original = (AdvShapelessRecipe) obj;
-                OreDictShapelessRecipe rec = new OreDictShapelessRecipe();
 
-                rec.iI.addAll(extractItemList(original.input));
-                rec.o = RecipeUtil.formatRegularItemStack(original.getRecipeOutput());
-                recipe = rec;
+                rec.input.addAll(extractItemList(original.input));
+                rec.output.add(RecipeUtil.formatRegularItemStack(original.getRecipeOutput()));
             } else {
                 unhandledClasses.add(obj.getClass());
                 continue;
             }
-            machineMap.computeIfAbsent(obj.getClass(), clz -> new Machine(clz.getSimpleName())).recipes.add(recipe);
+            machineMap.computeIfAbsent(obj.getClass(), clz -> new Machine(clz.getSimpleName())).recipes.add(rec);
         }
         return new Mod("todo", new ArrayList<>(machineMap.values()));
     }

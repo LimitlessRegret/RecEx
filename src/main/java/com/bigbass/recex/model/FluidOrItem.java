@@ -1,4 +1,4 @@
-package com.bigbass.recex.recipes.ingredients;
+package com.bigbass.recex.model;
 
 public class FluidOrItem {
 	/** id */

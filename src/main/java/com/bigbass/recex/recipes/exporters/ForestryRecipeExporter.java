@@ -1,9 +1,11 @@
 package com.bigbass.recex.recipes.exporters;
 
-import com.bigbass.recex.recipes.*;
-import com.bigbass.recex.recipes.forestry.RfRecipe;
+import com.bigbass.recex.model.RfRecipe;
+import com.bigbass.recex.model.ItemMetaData;
+import com.bigbass.recex.model.Machine;
+import com.bigbass.recex.recipes.Mod;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
+import com.bigbass.recex.model.ItemAmount;
 import forestry.api.fuels.FermenterFuel;
 import forestry.api.fuels.FuelManager;
 import forestry.api.recipes.*;
@@ -37,35 +39,35 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (ICarpenterRecipe recipe : RecipeManagers.carpenterManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = recipe.getPackagingTime();
+            rfRecipe.enabled = true;
+            rfRecipe.duration = recipe.getPackagingTime();
             rfRecipe.rft = EnergyManager.scaleForDifficulty(2040 / 10) / 4;
 
             for (Object ingredient : recipe.getCraftingGridRecipe().getIngredients()) {
                 if (ingredient instanceof ItemStack) {
-                    rfRecipe.iI.add(RecipeUtil.formatRegularItemStack((ItemStack) ingredient));
+                    rfRecipe.input.add(RecipeUtil.formatRegularItemStack((ItemStack) ingredient));
                 } else if (ingredient instanceof ItemStack[]) {
                     for (ItemStack stack : (ItemStack[]) ingredient) {
-                        rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(stack));
+                        rfRecipe.input.add(RecipeUtil.formatRegularItemStack(stack));
                     }
                 } else if (ingredient instanceof List) {
                     for (ItemStack stack : (List<ItemStack>) ingredient) {
-                        rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(stack));
+                        rfRecipe.input.add(RecipeUtil.formatRegularItemStack(stack));
                     }
                 }
             }
 
             if (recipe.getBox() != null) {
-                rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(recipe.getBox()));
+                rfRecipe.input.add(RecipeUtil.formatRegularItemStack(recipe.getBox()));
             }
 
             if (recipe.getFluidResource() != null) {
-                rfRecipe.fI.add(RecipeUtil.formatRegularFluidStack(recipe.getFluidResource()));
+                rfRecipe.input.add(RecipeUtil.formatRegularFluidStack(recipe.getFluidResource()));
             }
 
             ItemStack output = recipe.getCraftingGridRecipe().getRecipeOutput();
             if (output != null) {
-                rfRecipe.iO.add(RecipeUtil.formatRegularItemStack(output));
+                rfRecipe.output.add(RecipeUtil.formatRegularItemStack(output));
             }
 
             machine.recipes.add(rfRecipe);
@@ -79,20 +81,20 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (ICentrifugeRecipe recipe : RecipeManagers.centrifugeManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = recipe.getProcessingTime();
+            rfRecipe.enabled = true;
+            rfRecipe.duration = recipe.getProcessingTime();
             rfRecipe.rft = EnergyManager.scaleForDifficulty(3200 / 20) / 4;
 
             ItemStack input = recipe.getInput();
             if (input != null) {
-                rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(input));
+                rfRecipe.input.add(RecipeUtil.formatRegularItemStack(input));
             }
 
             for (Map.Entry<ItemStack, Float> output : recipe.getAllProducts().entrySet()) {
                 if (output != null && output.getKey() != null) {
                     ItemAmount item = RecipeUtil.formatRegularItemStack(output.getKey());
                     item.c = (int) (output.getValue() * 10000);
-                    rfRecipe.iO.add(item);
+                    rfRecipe.output.add(item);
                 }
             }
 
@@ -118,29 +120,29 @@ public class ForestryRecipeExporter implements RecipeExporter {
                 int extractionDuration = (int) Math.ceil((double) recipe.getFermentationValue() / fermentPerCycle);
 
                 RfRecipe rfRecipe = new RfRecipe();
-                rfRecipe.en = true;
-                rfRecipe.dur = 20 + (extractionDuration * 5);
+                rfRecipe.enabled = true;
+                rfRecipe.duration = 20 + (extractionDuration * 5);
                 rfRecipe.rft = EnergyManager.scaleForDifficulty(4200) / 4;
 
                 if (fuel != null) {
-                    rfRecipe.iI.add(fuel);
+                    rfRecipe.input.add(fuel);
                 }
 
                 ItemStack input = recipe.getResource();
                 if (input != null) {
-                    rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(input));
+                    rfRecipe.input.add(RecipeUtil.formatRegularItemStack(input));
                 }
 
                 FluidStack fluidInput = recipe.getFluidResource();
                 if (fluidInput != null) {
                     fluidInput.amount = fermentPerCycle * extractionDuration;
-                    rfRecipe.fI.add(RecipeUtil.formatRegularFluidStack(fluidInput));
+                    rfRecipe.input.add(RecipeUtil.formatRegularFluidStack(fluidInput));
                 }
 
                 if (recipe.getOutput() != null) {
                     int amount = Math.round(recipe.getFermentationValue() * recipe.getModifier());
                     ItemAmount output = RecipeUtil.formatRegularFluidStack(new FluidStack(recipe.getOutput(), amount));
-                    rfRecipe.fO.add(output);
+                    rfRecipe.output.add(output);
                 }
 
                 machine.recipes.add(rfRecipe);
@@ -155,20 +157,20 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (IMoistenerRecipe recipe : RecipeManagers.moistenerManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = recipe.getTimePerItem() / 4; // assume full efficiency
+            rfRecipe.enabled = true;
+            rfRecipe.duration = recipe.getTimePerItem() / 4; // assume full efficiency
             rfRecipe.rft = 0;
 
             ItemStack input = recipe.getResource();
             if (input != null) {
-                rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(input));
+                rfRecipe.input.add(RecipeUtil.formatRegularItemStack(input));
             }
 
-            rfRecipe.fI.add(RecipeUtil.formatRegularFluidStack(new FluidStack(FluidRegistry.WATER, rfRecipe.dur)));
+            rfRecipe.input.add(RecipeUtil.formatRegularFluidStack(new FluidStack(FluidRegistry.WATER, rfRecipe.duration)));
 
             ItemStack output = recipe.getProduct();
             if (output != null) {
-                rfRecipe.iO.add(RecipeUtil.formatRegularItemStack(output));
+                rfRecipe.output.add(RecipeUtil.formatRegularItemStack(output));
             }
 
             machine.recipes.add(rfRecipe);
@@ -182,24 +184,24 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (ISqueezerRecipe recipe : RecipeManagers.squeezerManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = recipe.getProcessingTime();
+            rfRecipe.enabled = true;
+            rfRecipe.duration = recipe.getProcessingTime();
             rfRecipe.rft = EnergyManager.scaleForDifficulty(1100 / 10) / 4;
 
             for (ItemStack input : recipe.getResources()) {
                 if (input != null) {
-                    rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(input));
+                    rfRecipe.input.add(RecipeUtil.formatRegularItemStack(input));
                 }
             }
 
             if (recipe.getRemnants() != null) {
                 ItemAmount item = RecipeUtil.formatRegularItemStack(recipe.getRemnants());
                 item.c = (int) (recipe.getRemnantsChance() * 10000);
-                rfRecipe.iO.add(item);
+                rfRecipe.output.add(item);
             }
 
             if (recipe.getFluidOutput() != null) {
-                rfRecipe.fO.add(RecipeUtil.formatRegularFluidStack(recipe.getFluidOutput()));
+                rfRecipe.output.add(RecipeUtil.formatRegularFluidStack(recipe.getFluidOutput()));
             }
 
             machine.recipes.add(rfRecipe);
@@ -213,16 +215,16 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (IStillRecipe recipe : RecipeManagers.stillManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = recipe.getCyclesPerUnit();
+            rfRecipe.enabled = true;
+            rfRecipe.duration = recipe.getCyclesPerUnit();
             rfRecipe.rft = EnergyManager.scaleForDifficulty(200) / 4;
 
             if (recipe.getInput() != null) {
-                rfRecipe.fI.add(RecipeUtil.formatRegularFluidStack(recipe.getInput()));
+                rfRecipe.input.add(RecipeUtil.formatRegularFluidStack(recipe.getInput()));
             }
 
             if (recipe.getOutput() != null) {
-                rfRecipe.fO.add(RecipeUtil.formatRegularFluidStack(recipe.getOutput()));
+                rfRecipe.output.add(RecipeUtil.formatRegularFluidStack(recipe.getOutput()));
             }
 
             machine.recipes.add(rfRecipe);
@@ -236,30 +238,30 @@ public class ForestryRecipeExporter implements RecipeExporter {
 
         for (IFabricatorRecipe recipe : RecipeManagers.fabricatorManager.recipes()) {
             RfRecipe rfRecipe = new RfRecipe();
-            rfRecipe.en = true;
-            rfRecipe.dur = 5;
+            rfRecipe.enabled = true;
+            rfRecipe.duration = 5;
             rfRecipe.rft = EnergyManager.scaleForDifficulty(200) / 4;
 
             for (Object ingredient : recipe.getIngredients()) {
                 if (ingredient instanceof ItemStack) {
-                    rfRecipe.iI.add(RecipeUtil.formatRegularItemStack((ItemStack) ingredient));
+                    rfRecipe.input.add(RecipeUtil.formatRegularItemStack((ItemStack) ingredient));
                 } else if (ingredient instanceof ItemStack[]) {
                     for (ItemStack stack : (ItemStack[]) ingredient) {
-                        rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(stack));
+                        rfRecipe.input.add(RecipeUtil.formatRegularItemStack(stack));
                     }
                 } else if (ingredient instanceof List) {
                     for (ItemStack stack : (List<ItemStack>) ingredient) {
-                        rfRecipe.iI.add(RecipeUtil.formatRegularItemStack(stack));
+                        rfRecipe.input.add(RecipeUtil.formatRegularItemStack(stack));
                     }
                 }
             }
 
             if (recipe.getLiquid() != null) {
-                rfRecipe.fI.add(RecipeUtil.formatRegularFluidStack(recipe.getLiquid()));
+                rfRecipe.input.add(RecipeUtil.formatRegularFluidStack(recipe.getLiquid()));
             }
 
             if (recipe.getRecipeOutput() != null) {
-                rfRecipe.iO.add(RecipeUtil.formatRegularItemStack(recipe.getRecipeOutput()));
+                rfRecipe.output.add(RecipeUtil.formatRegularItemStack(recipe.getRecipeOutput()));
             }
 
             machine.recipes.add(rfRecipe);

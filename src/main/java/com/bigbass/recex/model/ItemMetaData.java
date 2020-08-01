@@ -1,6 +1,4 @@
-package com.bigbass.recex.recipes;
-
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
+package com.bigbass.recex.model;
 
 public class ItemMetaData extends ItemAmount {
     public String meta;

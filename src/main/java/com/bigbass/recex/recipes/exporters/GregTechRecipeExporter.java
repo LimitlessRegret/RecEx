@@ -1,10 +1,10 @@
 package com.bigbass.recex.recipes.exporters;
 
-import com.bigbass.recex.recipes.Machine;
+import com.bigbass.recex.model.Machine;
 import com.bigbass.recex.recipes.Mod;
-import com.bigbass.recex.recipes.gregtech.GregtechRecipe;
+import com.bigbass.recex.model.GregtechRecipe;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
+import com.bigbass.recex.model.ItemAmount;
 import gregtech.api.util.GT_LanguageManager;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.item.ItemStack;
@@ -35,8 +35,8 @@ public class GregTechRecipeExporter implements RecipeExporter {
 
         for (GT_Recipe rec : recipeList) {
             GregtechRecipe gtr = new GregtechRecipe();
-            gtr.en = rec.mEnabled;
-            gtr.dur = rec.mDuration;
+            gtr.enabled = rec.mEnabled;
+            gtr.duration = rec.mDuration;
             gtr.eut = rec.mEUt;
 
             // item inputs
@@ -45,7 +45,7 @@ public class GregTechRecipeExporter implements RecipeExporter {
                 if (item == null) {
                     continue;
                 }
-                gtr.iI.add(item);
+                gtr.input.add(item);
             }
 
             // item outputs
@@ -58,7 +58,7 @@ public class GregTechRecipeExporter implements RecipeExporter {
                 }
 
                 item.c = rec.getOutputChance(i);
-                gtr.iO.add(item);
+                gtr.output.add(item);
             }
 
             // fluid inputs
@@ -67,7 +67,7 @@ public class GregTechRecipeExporter implements RecipeExporter {
                 if (fluid == null) {
                     continue;
                 }
-                gtr.fI.add(fluid);
+                gtr.input.add(fluid);
             }
 
             // fluid outputs
@@ -76,7 +76,7 @@ public class GregTechRecipeExporter implements RecipeExporter {
                 if (fluid == null) {
                     continue;
                 }
-                gtr.fO.add(fluid);
+                gtr.output.add(fluid);
             }
             machine.recipes.add(gtr);
         }

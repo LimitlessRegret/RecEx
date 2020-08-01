@@ -1,7 +1,7 @@
 package com.bigbass.recex.recipes.gregtech;
 
-import com.bigbass.recex.recipes.ingredients.ItemAmount;
-import com.bigbass.recex.recipes.ingredients.ItemUtil;
+import com.bigbass.recex.model.ItemAmount;
+import com.bigbass.recex.recipes.ItemUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 

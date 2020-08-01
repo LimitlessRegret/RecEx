@@ -1,6 +1,6 @@
 package com.bigbass.recex.recipes.exporters;
 
-import com.bigbass.recex.recipes.Machine;
+import com.bigbass.recex.model.Machine;
 import com.bigbass.recex.recipes.Mod;
 import gregtech.api.util.GTPP_Recipe;
 

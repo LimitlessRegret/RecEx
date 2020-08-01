@@ -1,6 +1,7 @@
-package com.bigbass.recex.recipes.ingredients;
+package com.bigbass.recex.recipes;
 
 import com.bigbass.recex.RecipeExporterMod;
+import com.bigbass.recex.model.FluidOrItem;
 import com.bigbass.recex.recipes.renderer.IconRenderer;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
@@ -92,10 +93,10 @@ public class ItemUtil {
             foi.lN = pattern.matcher(GT_LanguageManager.getTranslation(stack.getUnlocalizedName())).replaceAll("");
         } catch (Exception e) {
             try {
-                foi.lN = pattern.matcher(stack.getFluid().getName()).replaceAll("");
+                foi.lN = pattern.matcher(stack.getLocalizedName()).replaceAll("");
             } catch (Exception e2) {
                 try {
-                    foi.lN = pattern.matcher(stack.getLocalizedName()).replaceAll("");
+                    foi.lN = pattern.matcher(stack.getFluid().getName()).replaceAll("");
                 } catch (Exception e3) {
                 }
             }
