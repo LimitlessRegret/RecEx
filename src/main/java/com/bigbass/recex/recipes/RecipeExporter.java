@@ -4,10 +4,7 @@ import com.bigbass.recex.RecipeExporterMod;
 import com.bigbass.recex.model.Machine;
 import com.bigbass.recex.model.OreDictEntry;
 import com.bigbass.recex.model.RecipeBase;
-import com.bigbass.recex.recipes.exporters.CraftingTableRecipeExporter;
-import com.bigbass.recex.recipes.exporters.ForestryRecipeExporter;
-import com.bigbass.recex.recipes.exporters.GTPPRecipeExporter;
-import com.bigbass.recex.recipes.exporters.GregTechRecipeExporter;
+import com.bigbass.recex.recipes.exporters.*;
 import com.bigbass.recex.recipes.gregtech.RecipeUtil;
 import com.bigbass.recex.recipes.renderer.IconRenderer;
 import com.google.gson.Gson;
@@ -63,6 +60,7 @@ public class RecipeExporter {
 		sources.add(new GregTechRecipeExporter().getRecipes());
 		sources.add(new GTPPRecipeExporter().getRecipes());
 		sources.add(new ForestryRecipeExporter().getRecipes());
+		sources.addAll(new AvaritiaExporter().getRecipes().machines);
 		sources.addAll(new CraftingTableRecipeExporter().getRecipes().machines);
 		sources.add(getFurnaceRecipes());
 
